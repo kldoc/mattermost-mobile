@@ -1,6 +1,10 @@
 .PHONY: run run-ios run-android check-style test clean
 
 .npminstall: package.json
+	@if ! [ $(shell command -v xcodebuild) ]; then \
+		echo "xcode is not installed"; \
+		exit 1; \
+	fi
 	@if ! [ $(shell command -v npm) ]; then \
 		echo "npm is not installed"; \
 		exit 1; \
@@ -21,10 +25,6 @@ config/config.secret.json:
 run: run-ios
 
 run-ios: .npminstall config/config.secret.json
-	@if ! [ $(shell command -v xcodebuild) ]; then \
-		echo "xcode is not installed"; \
-		exit 1; \
-	fi
 	@echo Running iOS app in development
 
 	npm run run-ios
