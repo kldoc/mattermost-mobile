@@ -21,10 +21,19 @@ config/config.secret.json:
 run: run-ios
 
 run-ios: .npminstall config/config.secret.json
+	@if ! [ $(lsof -i 4tcp:8065 -sTCP:LISTEN) ]; then \
+    echo "http://localhost:8065 is not running,  Is the mattermost platform server running"; \
+	fi
 	@if ! [ $(shell command -v xcodebuild) ]; then \
 		echo "xcode is not installed"; \
 		exit 1; \
 	fi
+	@if ! [ $(shell command -v watchman) ]; then \
+    echo "installing watchman"; \
+    brew install watchman \
+    exit 1; \
+	fi
+
 	@echo Running iOS app in development
 
 	npm run run-ios
@@ -56,7 +65,7 @@ check-style: .npminstall
 
 clean:
 	@echo Cleaning app
-
+	watchman watch-del-all
 	npm cache clean
 	rm -rf node_modules
 	rm -f .npminstall
